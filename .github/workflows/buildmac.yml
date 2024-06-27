@@ -1,0 +1,40 @@
+name: Build and Upload Fizz
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: macos-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v2
+
+    - name: Install Homebrew
+      run: /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+
+    - name: Install Dependencies
+      run: |
+        brew install cmake
+        brew install boost
+        brew install gflags
+        brew install glog
+        brew install openssl
+        brew install folly
+
+    - name: Run Build Script
+      run: |
+        cd fizz
+        ./mac-build.sh
+
+    - name: Upload Build Artifacts
+      uses: actions/upload-artifact@v2
+      with:
+        name: fizz-build
+        path: fizz/out/
